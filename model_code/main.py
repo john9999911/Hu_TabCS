@@ -191,7 +191,7 @@ class CodeSearcher:
         split = self.train_params.get('validation_split', 0)
 
         val_loss = {'loss': 1., 'epoch': 0}
-        f1 = open('/data/shuaijianhang/TSACS-TASF/test_code/results/training_results.txt', 'a', encoding='utf-8',
+        f1 = open('/data/shuaijianhang/TSACS-TASF/model_code/results/training_results.txt', 'a', encoding='utf-8',
                   errors='ignore')
         for i in range(self.train_params['reload'] + 1, nb_epoch):
             print('Epoch %d :: \n' % i, end='')
@@ -346,7 +346,7 @@ class CodeSearcher:
             self._eval_sets['descs'] = descs
         data_len = len(self._eval_sets['descs'])
         numbers = codecs.open(
-            '/data/shuaijianhang/Vocab3Hybrid-CARLCS_Hiera_Attention/test_code/results/bootstrap_nums.txt', 'a',
+            '/data/shuaijianhang/Vocab3Hybrid-CARLCS_Hiera_Attention/model_code/results/bootstrap_nums.txt', 'a',
             errors='ignore', encoding='utf-8')
         for k in range(0, 10):
             succrate, acc, mrr, map, ndcg = 0, 0, 0, 0, 0
@@ -384,7 +384,7 @@ class CodeSearcher:
             ndcg = ndcg / float(data_len)
             print('SuccRate={}, ACC={}, MRR={}, MAP={}, nDCG={}'.format(succrate, acc, mrr, map, ndcg))
             f2 = codecs.open(
-                '/data/shuaijianhang/Vocab3Hybrid-CARLCS_Hiera_Attention/test_code/results/bootsrtap_results.txt', 'a',
+                '/data/shuaijianhang/Vocab3Hybrid-CARLCS_Hiera_Attention/model_code/results/bootsrtap_results.txt', 'a',
                 encoding='utf-8', errors='ignore')
             f2.write('SuccRate={}, ACC={}, MRR={}, MAP={}, nDCG={}'.format(succrate, acc, mrr, map, ndcg) + '\n')
 
@@ -463,7 +463,7 @@ def parse_args():
     parser = argparse.ArgumentParser("Train and Test Code Search(Embedding) Model")
     parser.add_argument("--proto", choices=["get_config"], default="get_config",
                         help="Prototype config to use for config")
-    parser.add_argument("--mode", choices=["train", "eval", "repr_code", "search"], default='train',
+    parser.add_argument("--mode", choices=["train", "eval", "repr_code", "search"], default='search',
                         help="The mode to run. The `train` mode trains a model;"
                              " the `eval` mode evaluat models in a test set "
                              " The `repr_code/repr_desc` mode computes vectors"
@@ -520,6 +520,15 @@ if __name__ == '__main__':
             zipped = zip(codes, sims)
             zipped = sorted(zipped, reverse=True, key=lambda x: x[1])
             zipped = codesearcher.postproc(zipped)
+
+            tl = list(zipped)
+            # return tl
+            for i in range(len(tl)):
+                print('\ncode:\n', tl[i][0], '\nsim:\n', tl[i][1])
+
+
+
+
             zipped = list(zipped)[:n_results]
             results = '\n\n'.join(map(str, zipped))  # combine the result into a returning string
             print(results)

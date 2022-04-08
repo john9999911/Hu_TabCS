@@ -9,6 +9,11 @@ tensorboard==1.7.0
 tensorflow==1.7.0
 wrapt==1.10.11
 
+# Cython==0.29.28
+pyinstaller==4.10
+
+
+
 
 
 
