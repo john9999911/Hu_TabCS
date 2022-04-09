@@ -13,8 +13,3 @@ wrapt==1.10.11
 pyinstaller==4.10
 
 
-
-
-
-
-

@@ -181,213 +181,213 @@ class CodeSearcher:
         model.load("{}models/{}/epo{:d}_code.h5".format(self.path, self.model_params['model_name'], epoch),
                    "{}models/{}/epo{:d}_desc.h5".format(self.path, self.model_params['model_name'], epoch))
 
-    ##### Training #####
-    def train(self, model):
-        if self.train_params['reload'] > 0:
-            self.load_model_epoch(model, self.train_params['reload'])
-        valid_every = self.train_params.get('valid_every', None)
-        save_every = self.train_params.get('save_every', None)
-        batch_size = self.train_params.get('batch_size', 128)
-        nb_epoch = self.train_params.get('nb_epoch', 50)
-        split = self.train_params.get('validation_split', 0)
+    # ##### Training #####
+    # def train(self, model):
+    #     if self.train_params['reload'] > 0:
+    #         self.load_model_epoch(model, self.train_params['reload'])
+    #     valid_every = self.train_params.get('valid_every', None)
+    #     save_every = self.train_params.get('save_every', None)
+    #     batch_size = self.train_params.get('batch_size', 128)
+    #     nb_epoch = self.train_params.get('nb_epoch', 50)
+    #     split = self.train_params.get('validation_split', 0)
+    #
+    #     val_loss = {'loss': 1., 'epoch': 0}
+    #     f1 = open('/data/shuaijianhang/TSACS-TASF/model_code/results/training_results.txt', 'a', encoding='utf-8',
+    #               errors='ignore')
+    #     for i in range(self.train_params['reload'] + 1, nb_epoch):
+    #         print('Epoch %d :: \n' % i, end='')
+    #         logger.debug('loading data chunk..')
+    #         chunk_methnames, chunk_apiseqs, chunk_tokens, chunk_sbt, chunk_descs = self.load_training_data_chunk()
+    #         logger.debug('padding data..')
+    #         chunk_padded_methnames = self.pad(chunk_methnames, self.data_params['methname_len'])
+    #         chunk_padded_apiseqs = self.pad(chunk_apiseqs, self.data_params['apiseq_len'])
+    #         chunk_padded_tokens = self.pad(chunk_tokens, self.data_params['tokens_len'])
+    #         chunk_padded_sbt = self.pad(chunk_sbt, self.data_params['sbt_len'])
+    #         chunk_padded_good_descs = self.pad(chunk_descs, self.data_params['desc_len'])
+    #         chunk_bad_descs = [desc for desc in chunk_descs]
+    #         random.shuffle(chunk_bad_descs)
+    #         chunk_padded_bad_descs = self.pad(chunk_bad_descs, self.data_params['desc_len'])
+    #         early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=2, mode='min')
+    #         hist = model.fit([chunk_padded_methnames, chunk_padded_apiseqs, chunk_padded_tokens, chunk_padded_sbt,
+    #                           chunk_padded_good_descs, chunk_padded_bad_descs], epochs=1, batch_size=batch_size,
+    #                          validation_split=split, callbacks=[early_stopping])
+    #         if hist.history['val_loss'][0] < val_loss['loss']:
+    #             val_loss = {'loss': hist.history['val_loss'][0], 'epoch': i}
+    #         print('Best: Loss = {}, Epoch = {}'.format(val_loss['loss'], val_loss['epoch']))
+    #
+    #         if valid_every is not None and i % valid_every == 0:
+    #             acc1, mrr = self.valid(model, 1)
+    #             print(str(acc1))
+    #             print(str(mrr))
+    #             f1.write('epoch={},ACC1={}, MRR={}'.format(i, acc1, mrr) + '\n')
+    #             # acc,mrr,map,ndcg=self.eval(model, 1000, 1)
+    #
+    #         if save_every is not None and i % save_every == 0:
+    #             self.save_model_epoch(model, i)
 
-        val_loss = {'loss': 1., 'epoch': 0}
-        f1 = open('/data/shuaijianhang/TSACS-TASF/model_code/results/training_results.txt', 'a', encoding='utf-8',
-                  errors='ignore')
-        for i in range(self.train_params['reload'] + 1, nb_epoch):
-            print('Epoch %d :: \n' % i, end='')
-            logger.debug('loading data chunk..')
-            chunk_methnames, chunk_apiseqs, chunk_tokens, chunk_sbt, chunk_descs = self.load_training_data_chunk()
-            logger.debug('padding data..')
-            chunk_padded_methnames = self.pad(chunk_methnames, self.data_params['methname_len'])
-            chunk_padded_apiseqs = self.pad(chunk_apiseqs, self.data_params['apiseq_len'])
-            chunk_padded_tokens = self.pad(chunk_tokens, self.data_params['tokens_len'])
-            chunk_padded_sbt = self.pad(chunk_sbt, self.data_params['sbt_len'])
-            chunk_padded_good_descs = self.pad(chunk_descs, self.data_params['desc_len'])
-            chunk_bad_descs = [desc for desc in chunk_descs]
-            random.shuffle(chunk_bad_descs)
-            chunk_padded_bad_descs = self.pad(chunk_bad_descs, self.data_params['desc_len'])
-            early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=2, mode='min')
-            hist = model.fit([chunk_padded_methnames, chunk_padded_apiseqs, chunk_padded_tokens, chunk_padded_sbt,
-                              chunk_padded_good_descs, chunk_padded_bad_descs], epochs=1, batch_size=batch_size,
-                             validation_split=split, callbacks=[early_stopping])
-            if hist.history['val_loss'][0] < val_loss['loss']:
-                val_loss = {'loss': hist.history['val_loss'][0], 'epoch': i}
-            print('Best: Loss = {}, Epoch = {}'.format(val_loss['loss'], val_loss['epoch']))
+    # def valid(self, model, K):
+    #     """
+    #     quick validation in a code pool.
+    #     param:
+    #         poolsize - size of the code pool, if -1, load the whole test set
+    #     """
+    #     # load test dataset
+    #     if self._eval_sets is None:
+    #         # self._eval_sets = dict([(s, self.load(s)) for s in ['dev', 'test1', 'test2']])
+    #         methnames, apiseqs, tokens, sbt, descs = self.load_valid_data_chunk()
+    #         self._eval_sets = dict()
+    #         self._eval_sets['methnames'] = methnames
+    #         self._eval_sets['apiseqs'] = apiseqs
+    #         self._eval_sets['tokens'] = tokens
+    #         self._eval_sets['sbt'] = sbt
+    #         self._eval_sets['descs'] = descs
+    #
+    #     c_1, c_2 = 0, 0
+    #     data_len = len(self._eval_sets['descs'])
+    #     for i in range(data_len):
+    #         bad_descs = [desc for desc in self._eval_sets['descs']]
+    #         random.shuffle(bad_descs)
+    #         descs = bad_descs
+    #         descs[0] = self._eval_sets['descs'][i]  # good desc
+    #         descs = self.pad(descs, self.data_params['desc_len'])
+    #         methnames = self.pad([self._eval_sets['methnames'][i]] * data_len, self.data_params['methname_len'])
+    #         apiseqs = self.pad([self._eval_sets['apiseqs'][i]] * data_len, self.data_params['apiseq_len'])
+    #         tokens = self.pad([self._eval_sets['tokens'][i]] * data_len, self.data_params['tokens_len'])
+    #         sbt = self.pad([self._eval_sets['sbt'][i]] * data_len, self.data_params['sbt_len'])
+    #         n_good = K
+    #
+    #         sims = model.predict([methnames, apiseqs, tokens, sbt, descs], batch_size=data_len).flatten()
+    #         r = rankdata(sims, method='max')
+    #         max_r = np.argmax(r)
+    #         max_n = np.argmax(r[:n_good])
+    #         c_1 += 1 if max_r == max_n else 0
+    #         c_2 += 1 / float(r[max_r] - r[max_n] + 1)
+    #
+    #     top1 = c_1 / float(data_len)
+    #     # percentage of predicted most similar desc that is really the corresponding desc
+    #     mrr = c_2 / float(data_len)
+    #     print('Precision={}, MRR={}'.format(top1, mrr))
+    #
+    #     return top1, mrr
+    #
+    #     ##### Evaluation in the develop set #####
 
-            if valid_every is not None and i % valid_every == 0:
-                acc1, mrr = self.valid(model, 1)
-                print(str(acc1))
-                print(str(mrr))
-                f1.write('epoch={},ACC1={}, MRR={}'.format(i, acc1, mrr) + '\n')
-                # acc,mrr,map,ndcg=self.eval(model, 1000, 1)
-
-            if save_every is not None and i % save_every == 0:
-                self.save_model_epoch(model, i)
-
-    def valid(self, model, K):
-        """
-        quick validation in a code pool.
-        param:
-            poolsize - size of the code pool, if -1, load the whole test set
-        """
-        # load test dataset
-        if self._eval_sets is None:
-            # self._eval_sets = dict([(s, self.load(s)) for s in ['dev', 'test1', 'test2']])
-            methnames, apiseqs, tokens, sbt, descs = self.load_valid_data_chunk()
-            self._eval_sets = dict()
-            self._eval_sets['methnames'] = methnames
-            self._eval_sets['apiseqs'] = apiseqs
-            self._eval_sets['tokens'] = tokens
-            self._eval_sets['sbt'] = sbt
-            self._eval_sets['descs'] = descs
-
-        c_1, c_2 = 0, 0
-        data_len = len(self._eval_sets['descs'])
-        for i in range(data_len):
-            bad_descs = [desc for desc in self._eval_sets['descs']]
-            random.shuffle(bad_descs)
-            descs = bad_descs
-            descs[0] = self._eval_sets['descs'][i]  # good desc
-            descs = self.pad(descs, self.data_params['desc_len'])
-            methnames = self.pad([self._eval_sets['methnames'][i]] * data_len, self.data_params['methname_len'])
-            apiseqs = self.pad([self._eval_sets['apiseqs'][i]] * data_len, self.data_params['apiseq_len'])
-            tokens = self.pad([self._eval_sets['tokens'][i]] * data_len, self.data_params['tokens_len'])
-            sbt = self.pad([self._eval_sets['sbt'][i]] * data_len, self.data_params['sbt_len'])
-            n_good = K
-
-            sims = model.predict([methnames, apiseqs, tokens, sbt, descs], batch_size=data_len).flatten()
-            r = rankdata(sims, method='max')
-            max_r = np.argmax(r)
-            max_n = np.argmax(r[:n_good])
-            c_1 += 1 if max_r == max_n else 0
-            c_2 += 1 / float(r[max_r] - r[max_n] + 1)
-
-        top1 = c_1 / float(data_len)
-        # percentage of predicted most similar desc that is really the corresponding desc
-        mrr = c_2 / float(data_len)
-        print('Precision={}, MRR={}'.format(top1, mrr))
-
-        return top1, mrr
-
-        ##### Evaluation in the develop set #####
-
-    def eval(self, model, K):
-        """
-        validate in a code pool.
-        param:
-            poolsize - size of the code pool, if -1, load the whole test set
-        """
-
-        def SUCCRATE(real, predict, n_results):
-            sum = 0.0
-            for val in real:
-                try:
-                    index = predict.index(val)
-                except ValueError:
-                    index = -1
-                if index <= n_results: sum = sum + 1
-            return sum / float(len(real))
-
-        def ACC(real, predict):
-            sum = 0.0
-            for val in real:
-                try:
-                    index = predict.index(val)
-                except ValueError:
-                    index = -1
-                if index != -1: sum = sum + 1
-            return sum / float(len(real))
-
-        def MAP(real, predict):
-            sum = 0.0
-            for id, val in enumerate(real):
-                try:
-                    index = predict.index(val)
-                except ValueError:
-                    index = -1
-                if index != -1: sum = sum + (id + 1) / float(index + 1)
-            return sum / float(len(real))
-
-        def MRR(real, predict):
-            sum = 0.0
-            for val in real:
-                try:
-                    index = predict.index(val)
-                except ValueError:
-                    index = -1
-                if index != -1: sum = sum + 1.0 / float(index + 1)
-            return sum / float(len(real))
-
-        def NDCG(real, predict):
-            dcg = 0.0
-            idcg = IDCG(len(real))
-            for i, predictItem in enumerate(predict):
-                if predictItem in real:
-                    itemRelevance = 1
-                    rank = i + 1
-                    dcg += (math.pow(2, itemRelevance) - 1.0) * (math.log(2) / math.log(rank + 1))
-            return dcg / float(idcg)
-
-        def IDCG(n):
-            idcg = 0
-            itemRelevance = 1
-            for i in range(n):
-                idcg += (math.pow(2, itemRelevance) - 1.0) * (math.log(2) / math.log(i + 2))
-            return idcg
-
-        # load valid dataset
-        if self._eval_sets is None:
-            methnames, apiseqs, tokens, sbt, descs = self.load_valid_data_chunk()
-            self._eval_sets = dict()
-            self._eval_sets['methnames'] = methnames
-            self._eval_sets['apiseqs'] = apiseqs
-            self._eval_sets['tokens'] = tokens
-            self._eval_sets['sbt'] = sbt
-            self._eval_sets['descs'] = descs
-        data_len = len(self._eval_sets['descs'])
-        numbers = codecs.open(
-            '/data/shuaijianhang/Vocab3Hybrid-CARLCS_Hiera_Attention/model_code/results/bootstrap_nums.txt', 'a',
-            errors='ignore', encoding='utf-8')
-        for k in range(0, 10):
-            succrate, acc, mrr, map, ndcg = 0, 0, 0, 0, 0
-            print(str(k * 10000) + " to : " + str((k + 1) * 10000))
-            bootstrap_num_list = np.random.choice(10000, 10000)
-            numbers.write(str(bootstrap_num_list) + '\n')
-            print('number of samples: ' + str(len(bootstrap_num_list)))
-            for number in bootstrap_num_list:
-                num = int(number)
-                print(num)
-                print('*****')
-                desc = self._eval_sets['descs'][num]  # good desc
-                descs = self.pad([desc] * data_len, self.data_params['desc_len'])
-                methnames = self.pad(self._eval_sets['methnames'], self.data_params['methname_len'])
-                apiseqs = self.pad(self._eval_sets['apiseqs'], self.data_params['apiseq_len'])
-                tokens = self.pad(self._eval_sets['tokens'], self.data_params['tokens_len'])
-                sbt = self.pad(self._eval_sets['sbt'], self.data_params['sbt_len'])
-                n_results = K
-                sims = model.predict([methnames, apiseqs, tokens, sbt, descs], batch_size=1000).flatten()
-                negsims = np.negative(sims)
-                predict_origin = np.argsort(negsims)  # predict = np.argpartition(negsims, kth=n_results-1)
-                predict = predict_origin[:n_results]
-                predict = [int(k) for k in predict]
-                predict_origin = [int(k) for k in predict_origin]
-                real = [num]
-                succrate += SUCCRATE(real, predict_origin, n_results)
-                acc += ACC(real, predict)
-                mrr += MRR(real, predict)
-                map += MAP(real, predict)
-                ndcg += NDCG(real, predict)
-            succrate = succrate / float(data_len)
-            acc = acc / float(data_len)
-            mrr = mrr / float(data_len)
-            map = map / float(data_len)
-            ndcg = ndcg / float(data_len)
-            print('SuccRate={}, ACC={}, MRR={}, MAP={}, nDCG={}'.format(succrate, acc, mrr, map, ndcg))
-            f2 = codecs.open(
-                '/data/shuaijianhang/Vocab3Hybrid-CARLCS_Hiera_Attention/model_code/results/bootsrtap_results.txt', 'a',
-                encoding='utf-8', errors='ignore')
-            f2.write('SuccRate={}, ACC={}, MRR={}, MAP={}, nDCG={}'.format(succrate, acc, mrr, map, ndcg) + '\n')
+    # def eval(self, model, K):
+    #     """
+    #     validate in a code pool.
+    #     param:
+    #         poolsize - size of the code pool, if -1, load the whole test set
+    #     """
+    #
+    #     def SUCCRATE(real, predict, n_results):
+    #         sum = 0.0
+    #         for val in real:
+    #             try:
+    #                 index = predict.index(val)
+    #             except ValueError:
+    #                 index = -1
+    #             if index <= n_results: sum = sum + 1
+    #         return sum / float(len(real))
+    #
+    #     def ACC(real, predict):
+    #         sum = 0.0
+    #         for val in real:
+    #             try:
+    #                 index = predict.index(val)
+    #             except ValueError:
+    #                 index = -1
+    #             if index != -1: sum = sum + 1
+    #         return sum / float(len(real))
+    #
+    #     def MAP(real, predict):
+    #         sum = 0.0
+    #         for id, val in enumerate(real):
+    #             try:
+    #                 index = predict.index(val)
+    #             except ValueError:
+    #                 index = -1
+    #             if index != -1: sum = sum + (id + 1) / float(index + 1)
+    #         return sum / float(len(real))
+    #
+    #     def MRR(real, predict):
+    #         sum = 0.0
+    #         for val in real:
+    #             try:
+    #                 index = predict.index(val)
+    #             except ValueError:
+    #                 index = -1
+    #             if index != -1: sum = sum + 1.0 / float(index + 1)
+    #         return sum / float(len(real))
+    #
+    #     def NDCG(real, predict):
+    #         dcg = 0.0
+    #         idcg = IDCG(len(real))
+    #         for i, predictItem in enumerate(predict):
+    #             if predictItem in real:
+    #                 itemRelevance = 1
+    #                 rank = i + 1
+    #                 dcg += (math.pow(2, itemRelevance) - 1.0) * (math.log(2) / math.log(rank + 1))
+    #         return dcg / float(idcg)
+    #
+    #     def IDCG(n):
+    #         idcg = 0
+    #         itemRelevance = 1
+    #         for i in range(n):
+    #             idcg += (math.pow(2, itemRelevance) - 1.0) * (math.log(2) / math.log(i + 2))
+    #         return idcg
+    #
+    #     # load valid dataset
+    #     if self._eval_sets is None:
+    #         methnames, apiseqs, tokens, sbt, descs = self.load_valid_data_chunk()
+    #         self._eval_sets = dict()
+    #         self._eval_sets['methnames'] = methnames
+    #         self._eval_sets['apiseqs'] = apiseqs
+    #         self._eval_sets['tokens'] = tokens
+    #         self._eval_sets['sbt'] = sbt
+    #         self._eval_sets['descs'] = descs
+    #     data_len = len(self._eval_sets['descs'])
+    #     numbers = codecs.open(
+    #         '/data/shuaijianhang/Vocab3Hybrid-CARLCS_Hiera_Attention/model_code/results/bootstrap_nums.txt', 'a',
+    #         errors='ignore', encoding='utf-8')
+    #     for k in range(0, 10):
+    #         succrate, acc, mrr, map, ndcg = 0, 0, 0, 0, 0
+    #         print(str(k * 10000) + " to : " + str((k + 1) * 10000))
+    #         bootstrap_num_list = np.random.choice(10000, 10000)
+    #         numbers.write(str(bootstrap_num_list) + '\n')
+    #         print('number of samples: ' + str(len(bootstrap_num_list)))
+    #         for number in bootstrap_num_list:
+    #             num = int(number)
+    #             print(num)
+    #             print('*****')
+    #             desc = self._eval_sets['descs'][num]  # good desc
+    #             descs = self.pad([desc] * data_len, self.data_params['desc_len'])
+    #             methnames = self.pad(self._eval_sets['methnames'], self.data_params['methname_len'])
+    #             apiseqs = self.pad(self._eval_sets['apiseqs'], self.data_params['apiseq_len'])
+    #             tokens = self.pad(self._eval_sets['tokens'], self.data_params['tokens_len'])
+    #             sbt = self.pad(self._eval_sets['sbt'], self.data_params['sbt_len'])
+    #             n_results = K
+    #             sims = model.predict([methnames, apiseqs, tokens, sbt, descs], batch_size=1000).flatten()
+    #             negsims = np.negative(sims)
+    #             predict_origin = np.argsort(negsims)  # predict = np.argpartition(negsims, kth=n_results-1)
+    #             predict = predict_origin[:n_results]
+    #             predict = [int(k) for k in predict]
+    #             predict_origin = [int(k) for k in predict_origin]
+    #             real = [num]
+    #             succrate += SUCCRATE(real, predict_origin, n_results)
+    #             acc += ACC(real, predict)
+    #             mrr += MRR(real, predict)
+    #             map += MAP(real, predict)
+    #             ndcg += NDCG(real, predict)
+    #         succrate = succrate / float(data_len)
+    #         acc = acc / float(data_len)
+    #         mrr = mrr / float(data_len)
+    #         map = map / float(data_len)
+    #         ndcg = ndcg / float(data_len)
+    #         print('SuccRate={}, ACC={}, MRR={}, MAP={}, nDCG={}'.format(succrate, acc, mrr, map, ndcg))
+    #         f2 = codecs.open(
+    #             '/data/shuaijianhang/Vocab3Hybrid-CARLCS_Hiera_Attention/model_code/results/bootsrtap_results.txt', 'a',
+    #             encoding='utf-8', errors='ignore')
+    #         f2.write('SuccRate={}, ACC={}, MRR={}, MAP={}, nDCG={}'.format(succrate, acc, mrr, map, ndcg) + '\n')
 
     ##### Compute Representation #####
     def repr_code(self, model):
