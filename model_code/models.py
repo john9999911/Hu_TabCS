@@ -165,26 +165,26 @@ class JointEmbeddingModel:
         dot2 = Dot(axes=1, normalize=False, name='row_dot')
         code_out = dot2([att_2_next, merged_code])
 
-        self._code_repr_model = Model(inputs=[methname, apiseq, tokens, sbt, desc], outputs=[code_out],
-                                      name='desc_repr_model')
-        # self._desc_repr_model=desc_repr_model
-        print('\nsummary of code representation model')
-        self._code_repr_model.summary()
-        fname = self.config['workdir'] + 'models/' + self.model_params['model_name'] + '/_desc_repr_model.png'
+        # self._code_repr_model = Model(inputs=[methname, apiseq, tokens, sbt, desc], outputs=[code_out],
+        #                               name='desc_repr_model')
+        # # self._desc_repr_model=desc_repr_model
+        # print('\nsummary of code representation model')
+        # self._code_repr_model.summary()
+        # fname = self.config['workdir'] + 'models/' + self.model_params['model_name'] + '/_desc_repr_model.png'
 
-        self._desc_repr_model = Model(inputs=[methname, apiseq, tokens, sbt, desc], outputs=[desc_out],
-                                      name='code_repr_model')
+        # self._desc_repr_model = Model(inputs=[methname, apiseq, tokens, sbt, desc], outputs=[desc_out],
+        #                               name='code_repr_model')
         # self._code_repr_model=code_repr_model
-        print('\nsummary of description representation model')
-        self._desc_repr_model.summary()
+        # print('\nsummary of description representation model')
+        # self._desc_repr_model.summary()
 
         """
         3: calculate the cosine similarity between code and desc
         """
         logger.debug('Building similarity model')
-        code_repr = self._code_repr_model([methname, apiseq, tokens, sbt, desc])
-        desc_repr = self._desc_repr_model([methname, apiseq, tokens, sbt, desc])
-        cos_sim = Dot(axes=1, normalize=True, name='cos_sim')([code_repr, desc_repr])
+        # code_repr = self._code_repr_model([methname, apiseq, tokens, sbt, desc])
+        # desc_repr = self._desc_repr_model([methname, apiseq, tokens, sbt, desc])
+        cos_sim = Dot(axes=1, normalize=True, name='cos_sim')([code_out, desc_out])
 
         sim_model = Model(inputs=[methname, apiseq, tokens, sbt, desc], outputs=[cos_sim], name='sim_model')
         self._sim_model = sim_model  # for model evaluation
@@ -214,8 +214,8 @@ class JointEmbeddingModel:
 
     def compile(self, optimizer, **kwargs):
         logger.info('compiling models')
-        self._code_repr_model.compile(loss='cosine_proximity', optimizer=optimizer, **kwargs)
-        self._desc_repr_model.compile(loss='cosine_proximity', optimizer=optimizer, **kwargs)
+        # self._code_repr_model.compile(loss='cosine_proximity', optimizer=optimizer, **kwargs)
+        # self._desc_repr_model.compile(loss='cosine_proximity', optimizer=optimizer, **kwargs)
         self._training_model.compile(loss=lambda y_true, y_pred: y_pred + y_true - y_true, optimizer=optimizer,
                                      **kwargs)
         # +y_true-y_true is for avoiding an unused input warning, it can be simply +y_true since y_true is always 0 in the training set.
@@ -235,14 +235,18 @@ class JointEmbeddingModel:
     def predict(self, x, **kwargs):
         return self._sim_model.predict(x, **kwargs)
 
-    def save(self, code_model_file, desc_model_file, **kwargs):
-        assert self._code_repr_model is not None, 'Must compile the model before saving weights'
-        self._code_repr_model.save_weights(code_model_file, **kwargs)
-        assert self._desc_repr_model is not None, 'Must compile the model before saving weights'
-        self._desc_repr_model.save_weights(desc_model_file, **kwargs)
+    def save(self, sim_model_file, **kwargs):
+        # assert self._code_repr_model is not None, 'Must compile the model before saving weights'
+        # self._code_repr_model.save_weights(code_model_file, **kwargs)
+        # assert self._desc_repr_model is not None, 'Must compile the model before saving weights'
+        # self._desc_repr_model.save_weights(desc_model_file, **kwargs)
+        assert self._sim_model is not None, 'Must compile the model before saving weights'
+        self._sim_model.save_weights(sim_model_file, **kwargs)
 
-    def load(self, code_model_file, desc_model_file, **kwargs):
-        assert self._code_repr_model is not None, 'Must compile the model loading weights'
-        self._code_repr_model.load_weights(code_model_file, **kwargs)
-        assert self._desc_repr_model is not None, 'Must compile the model loading weights'
-        self._desc_repr_model.load_weights(desc_model_file, **kwargs)
+    def load(self,sim_model_file, **kwargs):
+        # assert self._code_repr_model is not None, 'Must compile the model loading weights'
+        # self._code_repr_model.load_weights(code_model_file, **kwargs)
+        # assert self._desc_repr_model is not None, 'Must compile the model loading weights'
+        # self._desc_repr_model.load_weights(desc_model_file, **kwargs)
+        assert self._sim_model is not None, 'Must compile the model loading weights'
+        self._sim_model.load_weights(sim_model_file, **kwargs)

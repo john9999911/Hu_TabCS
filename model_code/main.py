@@ -166,19 +166,20 @@ class CodeSearcher:
     def save_model_epoch(self, model, epoch):
         if not os.path.exists(self.path + 'models/' + self.model_params['model_name'] + '/'):
             os.makedirs(self.path + 'models/' + self.model_params['model_name'] + '/')
-        model.save("{}models/{}/epo{:d}_code.h5".format(self.path, self.model_params['model_name'], epoch),
-                   "{}models/{}/epo{:d}_desc.h5".format(self.path, self.model_params['model_name'], epoch),
+        # model.save("{}models/{}/epo{:d}_code.h5".format(self.path, self.model_params['model_name'], epoch),
+        #            "{}models/{}/epo{:d}_desc.h5".format(self.path, self.model_params['model_name'], epoch),
+        #            overwrite=True)
+        model.save("{}models/{}/epo{:d}_sim.h5".format(self.path, self.model_params['model_name'], epoch),
                    overwrite=True)
 
     def load_model_epoch(self, model, epoch):
-        assert os.path.exists(
-            "{}models/{}/epo{:d}_code.h5".format(self.path, self.model_params['model_name'], epoch)) \
-            , "Weights at epoch {:d} not found".format(epoch)
-        assert os.path.exists(
-            "{}models/{}/epo{:d}_desc.h5".format(self.path, self.model_params['model_name'], epoch)) \
-            , "Weights at epoch {:d} not found".format(epoch)
-        model.load("{}models/{}/epo{:d}_code.h5".format(self.path, self.model_params['model_name'], epoch),
-                   "{}models/{}/epo{:d}_desc.h5".format(self.path, self.model_params['model_name'], epoch))
+        # assert os.path.exists(
+        #     "{}models/{}/epo{:d}_code.h5".format(self.path, self.model_params['model_name'], epoch)) \
+        #     , "Weights at epoch {:d} not found".format(epoch)
+        # assert os.path.exists(
+        #     "{}models/{}/epo{:d}_desc.h5".format(self.path, self.model_params['model_name'], epoch)) \
+        #     , "Weights at epoch {:d} not found".format(epoch)
+        model.load("{}models/{}/epo{:d}_sim.h5".format(self.path, self.model_params['model_name'], epoch))
 
     ##### Training #####
     def train(self, model):
