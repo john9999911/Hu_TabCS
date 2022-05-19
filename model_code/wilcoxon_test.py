@@ -6,4 +6,4 @@ TSACS_TASF_MRR_10times_bootstrap = [0.5735977777777758, 0.567866785714284, 0.566
                                     0.5653392063492049, 0.5681766269841253, 0.5569228968253946, 0.5615689682539661,
                                     0.5645849603174583, 0.563360317460315]
 
-print(stats.wilcoxon(DeepCS_MRR_top1_10times_bootstrap, TSACS_TASF_MRR_10times_bootstrap))
+# print(stats.wilcoxon(DeepCS_MRR_top1_10times_bootstrap, TSACS_TASF_MRR_10times_bootstrap))

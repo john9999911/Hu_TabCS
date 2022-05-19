@@ -44,7 +44,7 @@ class JointEmbeddingModel:
         """
         1. Build Code Representation Model
         """
-        logger.debug('Building Code Representation Model')
+        # logger.debug('Building Code Representation Model')
         methname = Input(shape=(self.data_params['methname_len'],), dtype='int32', name='methname')
         apiseq = Input(shape=(self.data_params['apiseq_len'],), dtype='int32', name='apiseq')
         tokens = Input(shape=(self.data_params['tokens_len'],), dtype='int32', name='tokens')
@@ -125,7 +125,7 @@ class JointEmbeddingModel:
         2. Build Desc Representation Model
         '''
         ## Desc Representation ##
-        logger.debug('Building Desc Representation Model')
+        # logger.debug('Building Desc Representation Model')
         desc = Input(shape=(self.data_params['desc_len'],), dtype='int32', name='desc')
         # 1.embedding
         init_emb_weights = np.load(self.config['workdir'] + self.model_params['init_embed_weights_desc']) if \
@@ -181,15 +181,15 @@ class JointEmbeddingModel:
         """
         3: calculate the cosine similarity between code and desc
         """
-        logger.debug('Building similarity model')
+        # logger.debug('Building similarity model')
         # code_repr = self._code_repr_model([methname, apiseq, tokens, sbt, desc])
         # desc_repr = self._desc_repr_model([methname, apiseq, tokens, sbt, desc])
         cos_sim = Dot(axes=1, normalize=True, name='cos_sim')([code_out, desc_out])
 
         sim_model = Model(inputs=[methname, apiseq, tokens, sbt, desc], outputs=[cos_sim], name='sim_model')
         self._sim_model = sim_model  # for model evaluation
-        print("\nsummary of similarity model")
-        self._sim_model.summary()
+        # print("\nsummary of similarity model")
+        # self._sim_model.summary()
         fname = self.config['workdir'] + 'models/' + self.model_params['model_name'] + '/_sim_model.png'
         # plot_model(self._sim_model, show_shapes=True, to_file=fname)
 
@@ -203,17 +203,17 @@ class JointEmbeddingModel:
         loss = Lambda(lambda x: K.maximum(1e-6, self.model_params['margin'] - x[0] + x[1]),
                       output_shape=lambda x: x[0], name='loss')([good_sim, bad_sim])
 
-        logger.debug('Building training model')
+        # logger.debug('Building training model')
         self._training_model = Model(
             inputs=[self.methname, self.apiseq, self.tokens, self.sbt, self.desc_good, self.desc_bad],
             outputs=[loss], name='training_model')
-        print('\nsummary of training model')
-        self._training_model.summary()
+        # print('\nsummary of training model')
+        # self._training_model.summary()
         fname = self.config['workdir'] + 'models/' + self.model_params['model_name'] + '/_training_model.png'
         # plot_model(self._training_model, show_shapes=True, to_file=fname)
 
     def compile(self, optimizer, **kwargs):
-        logger.info('compiling models')
+        # logger.info('compiling models')
         # self._code_repr_model.compile(loss='cosine_proximity', optimizer=optimizer, **kwargs)
         # self._desc_repr_model.compile(loss='cosine_proximity', optimizer=optimizer, **kwargs)
         self._training_model.compile(loss=lambda y_true, y_pred: y_pred + y_true - y_true, optimizer=optimizer,
